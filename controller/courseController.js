@@ -65,9 +65,6 @@ const addCourse = async (req, res) => {
               folder: "course_promotional_videos",
               resource_type: "video",
               allowed_formats: ["mp4", "mov", "avi"],
-              chunk_size: 6000000,
-              eager: [{ format: "mp4", quality: "auto" }],
-              eager_async: true,
             },
             (error, result) => {
               if (error) reject(error);
@@ -274,9 +271,6 @@ const updateCourse = async (req, res) => {
               folder: "course_promotional_videos",
               resource_type: "video",
               allowed_formats: ["mp4", "mov", "avi", "webm"],
-              chunk_size: 6000000,
-              eager: [{ format: "mp4", quality: "auto" }],
-              eager_async: true,
             },
             (error, result) => {
               if (error) reject(error);
@@ -600,9 +594,6 @@ const addLessonToCourse = async (req, res) => {
               resource_type: "video",
               folder: "course-videos",
               allowed_formats: ["mp4", "mov", "avi", "webm"],
-              chunk_size: 6000000,
-              eager: [{ format: "mp4", quality: "auto" }],
-              eager_async: true,
             },
             (error, result) => {
               if (error) reject(error);
@@ -681,9 +672,6 @@ const updateLessonInCourse = async (req, res) => {
               resource_type: "video",
               folder: "course-videos",
               allowed_formats: ["mp4", "mov", "avi", "webm"],
-              chunk_size: 6000000,
-              eager: [{ format: "mp4", quality: "auto" }],
-              eager_async: true,
             },
             (error, result) => {
               if (error) reject(error);
