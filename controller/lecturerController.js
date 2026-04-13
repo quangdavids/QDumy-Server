@@ -5,7 +5,6 @@ const CourseCompletion = require("../model/courseCompletionSchema");
 const { Mongoose } = require("mongoose");
 const { default: mongoose } = require("mongoose");
 const cloudinary = require("../config/cloudinary");
-const fs = require("fs");
 const getLecturer = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -257,21 +256,25 @@ const updateLecturerProfile = async (req, res) => {
     let profilePicUrl = lecturer.profilePic;
     if (req.file) {
       try {
-        const imageUploadResult = await cloudinary.uploader.upload(
-          req.file.path,
-          {
-            folder: "instructor_profiles",
-            resource_type: "image",
-          }
-        );
+        const imageUploadResult = await new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              folder: "instructor_profiles",
+              resource_type: "image",
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          stream.end(req.file.buffer);
+        });
         profilePicUrl = imageUploadResult.secure_url;
-        // Delete the local file after upload
-        fs.unlinkSync(req.file.path);
       } catch (uploadError) {
         console.error("Cloudinary Upload error", uploadError);
         return res.status(400).json({
           message: "Failed to upload profile picture",
-          error: uploadError,
+          error: uploadError.message,
         });
       }
     }

@@ -6,7 +6,6 @@ const Review = require("../model/reviewSchema");
 const CourseCompletion = require("../model/courseCompletionSchema");
 const multer = require("multer");
 const cloudinary = require("../config/cloudinary");
-const fs = require("fs");
 const mongoose = require("mongoose");
 const lecturerSchema = require("../model/lecturerSchema");
 // const uploadToCloudinary = () => {
@@ -35,43 +34,52 @@ const addCourse = async (req, res) => {
     if (req.files && req.files.courseImage) {
       const imageFile = req.files.courseImage[0];
       try {
-        const imageUploadResult = await cloudinary.uploader.upload(
-          imageFile.path,
-          {
-            folder: "course_thumbnails",
-            resource_type: "image",
-          },
-        );
+        const imageUploadResult = await new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              folder: "course_thumbnails",
+              resource_type: "image",
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          stream.end(imageFile.buffer);
+        });
         courseImageUrl = imageUploadResult.secure_url;
-
-        fs.unlinkSync(imageFile.path);
       } catch (uploadError) {
         console.error("Cloudinary Upload error", uploadError);
         return res.status(400).json({
           message: "Failed to upload course image.",
-          error: uploadError,
+          error: uploadError.message,
         });
       }
     }
     if (req.files && req.files.promotionalVideo) {
       const videoFile = req.files.promotionalVideo[0];
       try {
-        const videoUploadResult = await cloudinary.uploader.upload(
-          videoFile.path,
-          {
-            folder: "course_promotional_videos",
-            resource_type: "video",
-            allowed_formats: ["mp4", "mov", "avi"],
-            chunk_size: 6000000,
-            eager: [{ format: "mp4", quality: "auto" }],
-            eager_async: true,
-          },
-        );
+        const videoUploadResult = await new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              folder: "course_promotional_videos",
+              resource_type: "video",
+              allowed_formats: ["mp4", "mov", "avi"],
+              chunk_size: 6000000,
+              eager: [{ format: "mp4", quality: "auto" }],
+              eager_async: true,
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          stream.end(videoFile.buffer);
+        });
         promotionalVideoUrl = videoUploadResult.secure_url;
-        fs.unlinkSync(videoFile.path);
       } catch (uploadError) {
         console.error("Cloudinary Upload Error", uploadError);
-        return res.status(400).json({ message: "Failed to upload video", error: uploadError });
+        return res.status(400).json({ message: "Failed to upload video", error: uploadError.message });
       }
     }
 
@@ -234,20 +242,25 @@ const updateCourse = async (req, res) => {
     if (req.files && req.files.courseImage) {
       const imageFile = req.files.courseImage[0];
       try {
-        const imageUploadResult = await cloudinary.uploader.upload(
-          imageFile.path,
-          {
-            folder: "course_thumbnails",
-            resource_type: "image",
-          },
-        );
+        const imageUploadResult = await new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              folder: "course_thumbnails",
+              resource_type: "image",
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          stream.end(imageFile.buffer);
+        });
         courseData.courseImage = imageUploadResult.secure_url;
-        fs.unlinkSync(imageFile.path);
       } catch (uploadError) {
         console.error("Cloudinary Upload error", uploadError);
         return res.status(400).json({
           message: "Failed to upload course image.",
-          error: uploadError,
+          error: uploadError.message,
         });
       }
     }
@@ -255,22 +268,27 @@ const updateCourse = async (req, res) => {
     if (req.files && req.files.promotionalVideo) {
       const videoFile = req.files.promotionalVideo[0];
       try {
-        const videoUploadResult = await cloudinary.uploader.upload(
-          videoFile.path,
-          {
-            folder: "course_promotional_videos",
-            resource_type: "video",
-            allowed_formats: ["mp4", "mov", "avi", "webm"],
-            chunk_size: 6000000,
-            eager: [{ format: "mp4", quality: "auto" }],
-            eager_async: true,
-          },
-        );
+        const videoUploadResult = await new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              folder: "course_promotional_videos",
+              resource_type: "video",
+              allowed_formats: ["mp4", "mov", "avi", "webm"],
+              chunk_size: 6000000,
+              eager: [{ format: "mp4", quality: "auto" }],
+              eager_async: true,
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          stream.end(videoFile.buffer);
+        });
         courseData.promotionalVideo = videoUploadResult.secure_url;
-        fs.unlinkSync(videoFile.path);
       } catch (uploadError) {
         console.error("Cloudinary Upload Error", uploadError);
-        return res.status(400).json({ message: "Failed to upload video" });
+        return res.status(400).json({ message: "Failed to upload video", error: uploadError.message });
       }
     }
 
@@ -576,13 +594,22 @@ const addLessonToCourse = async (req, res) => {
     // Handle video upload if file exists
     if (req.file) {
       try {
-        const result = await cloudinary.uploader.upload(req.file.path, {
-          resource_type: "video",
-          folder: "course-videos",
-          allowed_formats: ["mp4", "mov", "avi", "webm"],
-          chunk_size: 6000000,
-          eager: [{ format: "mp4", quality: "auto" }],
-          eager_async: true,
+        const result = await new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              resource_type: "video",
+              folder: "course-videos",
+              allowed_formats: ["mp4", "mov", "avi", "webm"],
+              chunk_size: 6000000,
+              eager: [{ format: "mp4", quality: "auto" }],
+              eager_async: true,
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          stream.end(req.file.buffer);
         });
 
         videoData = {
@@ -590,8 +617,6 @@ const addLessonToCourse = async (req, res) => {
           videoPublicId: result.public_id,
           duration: result.duration,
         };
-
-        fs.unlinkSync(req.file.path);
       } catch (uploadError) {
         console.error("Cloudinary upload error:", uploadError);
         return res.status(400).json({
@@ -650,13 +675,22 @@ const updateLessonInCourse = async (req, res) => {
     // Handle video upload if file is provided
     if (req.file) {
       try {
-        const result = await cloudinary.uploader.upload(req.file.path, {
-          resource_type: "video",
-          folder: "course-videos",
-          allowed_formats: ["mp4", "mov", "avi"],
-          chunk_size: 6000000,
-          eager: [{ format: "mp4", quality: "auto" }],
-          eager_async: true,
+        const result = await new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              resource_type: "video",
+              folder: "course-videos",
+              allowed_formats: ["mp4", "mov", "avi", "webm"],
+              chunk_size: 6000000,
+              eager: [{ format: "mp4", quality: "auto" }],
+              eager_async: true,
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          stream.end(req.file.buffer);
         });
 
         // Delete old video if it exists
@@ -675,8 +709,6 @@ const updateLessonInCourse = async (req, res) => {
           videoPublicId: result.public_id,
           duration: result.duration,
         };
-
-        fs.unlinkSync(req.file.path);
       } catch (uploadError) {
         console.error("Cloudinary upload error:", uploadError);
         return res.status(400).json({
