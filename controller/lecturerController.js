@@ -64,7 +64,7 @@ const registerLecturer = async (req, res) => {
       lecturerId: lecturerId,
       lecturerName: user.username,
       email: user.email,
-      biography,
+      biography: "",
       socialLinks: {
         facebook: "",
         twitter: "",
