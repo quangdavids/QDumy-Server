@@ -357,8 +357,31 @@ const searchCourse = async (req, res) => {
     //     return;
     // }
 
+
+
     const perPage = parseInt(req.query.limit) || 9;
     const pages = parseInt(req.query.page) || 1;
+
+      if (!query || query.trim() === "") {
+      const course = await Course.find({})
+        .populate({
+          path: "review",
+          select: "rating",
+        })
+        .skip(perPage * (pages - 1))
+        .limit(perPage)
+        .sort({ createdAt: -1 });
+
+      const totalCourse = await Course.countDocuments({});
+
+      return res.status(200).json({
+        message: "Successfully found",
+        course,
+        currentPage: pages,
+        totalPages: Math.ceil(totalCourse / perPage),
+        totalCourse,
+      });
+    }
 
     let search = {};
     if (query) {
