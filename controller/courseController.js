@@ -171,6 +171,7 @@ const getAllCourses = async (req, res) => {
 const getLatestCourses = async (req, res) => {
   try {
     const latestCourses = await Course.find({ status: "published" })
+      .populate("lecturerId")
       .sort({ createdAt: -1 })
       .limit(5);
     // .populate("ownedByLecturer")

@@ -112,46 +112,10 @@ const logout = async (req, res) => {
   }
 };
 
-// Refresh access token using refresh token
-const refreshAccessToken = async (req, res) => {
-  try {
-    const { refreshToken } = req.body;
-    const refreshTokenFromCookie = req.cookies.refreshToken;
-
-    const token = refreshToken || refreshTokenFromCookie;
-
-    if (!token) {
-      return res.status(401).json({ message: "Refresh token is required" });
-    }
-
-    if (!process.env.JWT_SECRET) {
-      return res.status(500).json({ error: "Server configuration error" });
-    }
-
-    const secret = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET;
-    const decoded = jwt.verify(token, secret);
-    const userId = decoded.userId;
-
-    // Generate new access token
-    const { generateAccessToken } = require("../config/jwt");
-    const newAccessToken = generateAccessToken(userId);
-
-    res.status(200).json({
-      message: "Token refreshed successfully",
-      accessToken: newAccessToken,
-    });
-  } catch (error) {
-    console.error("Token refresh error:", error.message);
-    return res
-      .status(401)
-      .json({ message: "Invalid or expired refresh token" });
-  }
-};
 
 module.exports = {
   register,
   login,
-  logout,
-  refreshAccessToken,
+  logout
   // googleLogin,
 };

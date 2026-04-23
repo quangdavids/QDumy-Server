@@ -111,7 +111,7 @@ const createCheckoutSession = async (req, res) => {
 const verifyPayment = async (req, res) => {
   try {
     const { session_id, userId: queryUserId } = req.query;
-    // Handle both Firebase (uid) and JWT (userId) token formats
+    
     const userId = req.user?.userId || req.user?._id || req.user?.uid || queryUserId;
 
     if (!session_id) {
