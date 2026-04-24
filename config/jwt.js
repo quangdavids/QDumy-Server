@@ -5,7 +5,7 @@ const generateAccessToken = (payload) => {
   return jwt.sign(
     payload, 
     process.env.JWT_SECRET,
-    { expiresIn: "60d" }
+    { expiresIn: "14d" }
   );
 }
 
@@ -15,7 +15,7 @@ const generateToken = (payload, res) => {
 
   // Store token in httpOnly cookie
   res.cookie("jwt", token, {
-    maxAge: 60 * 24 * 60 * 60 * 1000, // 60 days
+    maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days
     sameSite: 'None',
     httpOnly: true,
     secure: true

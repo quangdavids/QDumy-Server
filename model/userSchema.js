@@ -25,6 +25,7 @@ const userSchema = mongoose.Schema(
       default:
         "https://media.istockphoto.com/id/1444077739/photo/college-study-and-education-student-man-portrait-with-back-to-school-backpack-and-portfolio.jpg?s=612x612&w=0&k=20&c=PAQmqKzYd3OiKhlfrT1DVMQNkGu-drX4rtJ5p6y7D8c=",
     },
+    isLecturer: { type: Boolean, default: false},
     dateJoined: { type: Date, default: Date.now },
     review: [{ type: Schema.Types.ObjectId, ref: "Review" }],
     enrolledCourses: [{ type: Schema.Types.ObjectId, ref: "Course" }],

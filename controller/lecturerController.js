@@ -53,6 +53,8 @@ const registerLecturer = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    await User.findByIdAndUpdate(lecturerId, {isLecturer: true})
+
     // Check if lecturer already exists
     const existingLecturer = await Lecturer.findOne({ lecturerId: lecturerId });
     if (existingLecturer) {
