@@ -29,7 +29,7 @@ const getRecommendation = async (req, res) => {
     // const user = User.find(userId)
     const availableCourses = await Course.find(
       {},
-      "_id title description price category"
+      "_id title description price category courseImage"
     )
       .limit(10)
       .lean();
